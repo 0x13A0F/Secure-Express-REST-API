@@ -19,7 +19,7 @@ module.exports = async ({ app }) => {
     // error handling middleware
     app.use(function (err, req, res, next) {
         console.log(err.message);
-        res.status(422).json({ "error": "bad request" });
+        res.status(422).json({ success: false, statusCode: 422, error: "Bad Request" });
     })
 
     return app;

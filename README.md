@@ -14,8 +14,8 @@ using JWT tokens, it is meant to be as Simple and Secure as possible.
 | Users | Parameters |
 |:----:|:-----:|
 | GET /api/users | x |
-| GET /api/user/id | x |
-
+| GET /api/user/:id | x |
+| PUT /api/user/:id | email,username,password |
 
 | Post | Parameters |
 |:----:|:-----:|

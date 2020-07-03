@@ -29,6 +29,16 @@ const postValidation = (data) => {
     return postSchema.validate(data);
 }
 
+const userValidation = (data) => {
+    const userSchema = Joi.object({
+        username: Joi.string().min(6).max(20).required(),
+        email: Joi.string().email().min(6).max(30).required(),
+        password: Joi.string().min(6).required()
+    });
+    return userSchema.validate(data);
+}
+
 module.exports.registerValidation = registerValidation;
 module.exports.loginValidation = loginValidation;
 module.exports.postValidation = postValidation;
+module.exports.userValidation = userValidation;

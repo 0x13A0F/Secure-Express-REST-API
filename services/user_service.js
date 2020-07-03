@@ -1,5 +1,7 @@
 const User = require('../models/user');
 const { error_json, success_json } = require('../utils/helpers');
+const { userValidation } = require('../utils/validation');
+const bcrypt = require('bcryptjs');
 
 module.exports = class UserService {
     static async getUsers(session) {
@@ -7,39 +9,55 @@ module.exports = class UserService {
         if (session.role != 'admin')
             return error_json(false, 401, "Not authorized");
         else {
-            try {
-                var numUsers = await User.countDocuments({});
-                var res = await User.find({}, { password: 0 });
-                return success_json(true, 200, { total: numUsers, users: res });
-            }
-            catch (err) {
-                console.log(err.message);
-                return error_json(false, 422, "Bad request");
-            }
+            var numUsers = await User.countDocuments({});
+            var res = await User.find({}, { password: 0 });
+            return success_json(true, 200, { total: numUsers, users: res });
         }
     }
 
     static async getUser(userId) {
 
-        try {
-            var user = await User.findById({ _id: userId }, { password: 0 });
-            if (!user)
-                return error_json(false, 404, "User not found");
-            else
-                return success_json(true, 200, user);
-        }
-        catch (err) {
-            console.log(err.message);
-            return error_json(false, 422, "Bad request");
-        }
+        var user = await User.findById({ _id: userId }, { password: 0 });
+        if (!user)
+            return error_json(false, 404, "User not found");
+        else
+            return success_json(true, 200, user);
+
     }
 
-    static async editUser(userId, data) {
-        try {
+    static async editUser(session, userId, data) {
 
-        } catch (err) {
-            console.log(err.message);
-            return error_json(false, 422, "Bad request");
+        // check if data is valid
+        const { error } = userValidation(data);
+        if (error)
+            return error_json(false, 400, error.details[0].message);
+
+        if (session.user_id == userId || session.role == "admin") {
+            // make sure role is not modifed
+            data.role = session.role;
+            // check if new username doesn't exist
+            var res = await User.findOne({ username: data.username, _id: { $ne: session.user_id } })
+            if (res)
+                return error_json(false, 400, "This username already exists");
+            // check if new email doesnt' exist
+            res = await User.findOne({ email: data.email, _id: { $ne: session.user_id } });
+            console.log(res);
+            if (res)
+                return error_json(false, 400, "This email already exists");
+
+            // Hash the password
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(data.password, salt);
+            data.password = hashedPassword;
+            // if everything is ok Edit the user
+            const user = await User.findOneAndUpdate({ _id: session.user_id }, data);
+            if (!user)
+                return error_json(false, 500, "Error editing user");
+            const editedUser = await User.findOne({ _id: session.user_id }, { password: 0 });
+            return success_json(true, 200, editedUser)
+        } else {
+            return error_json(false, 401, "Not authorized");
         }
+
     }
 }
