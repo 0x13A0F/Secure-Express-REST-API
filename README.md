@@ -30,7 +30,7 @@ using JWT tokens, it is meant to be as Secure as possible.
 
 1. Clone the repo
 2. add your RSA public.key and private.key files in /config
-3. add .env file containing the following:
+3. add .env file in /config containing the following:
 ```
 DB_URL=mongodb://username:password@host/rest-api
 PORT=4000
