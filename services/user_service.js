@@ -13,7 +13,8 @@ module.exports = class UserService {
                 return success_json(true, 200, { total: numUsers, users: res });
             }
             catch (err) {
-                return error_json(false, 422, err.message);
+                console.log(err.message);
+                return error_json(false, 422, "Bad request");
             }
         }
     }
@@ -28,7 +29,17 @@ module.exports = class UserService {
                 return success_json(true, 200, user);
         }
         catch (err) {
-            return error_json(false, 422, err.message);
+            console.log(err.message);
+            return error_json(false, 422, "Bad request");
+        }
+    }
+
+    static async editUser(userId, data) {
+        try {
+
+        } catch (err) {
+            console.log(err.message);
+            return error_json(false, 422, "Bad request");
         }
     }
 }

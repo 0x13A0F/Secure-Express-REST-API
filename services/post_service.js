@@ -21,7 +21,8 @@ module.exports = class PostService {
             return success_json(true, 200, post);
         }
         catch (err) {
-            return error_json(false, 422, err.message);
+            console.log(err.message);
+            return error_json(false, 422, "Bad request");
         }
 
     }
@@ -34,7 +35,8 @@ module.exports = class PostService {
             return success_json(true, 200, post);
         }
         catch (err) {
-            return error_json(false, 422, err.message);
+            console.log(err.message);
+            return error_json(false, 422, "Bad request");
         }
     }
 
@@ -60,7 +62,8 @@ module.exports = class PostService {
                 return error_json(false, 401, "Not authorized");
         }
         catch (err) {
-            return error_json(false, 422, err.message);
+            console.log(err.message);
+            return error_json(false, 422, "Bad request");
         }
     }
 
@@ -82,7 +85,8 @@ module.exports = class PostService {
                 return error_json(false, 401, "Not Authorized");
 
         } catch (err) {
-            return error_json(false, 422, err.message);
+            console.log(err.message);
+            return error_json(false, 422, "Bad request");
         }
     }
 
@@ -106,7 +110,8 @@ module.exports = class PostService {
             return success_json(true, 200, { count: posts.length, total: count, posts: posts });
 
         } catch (err) {
-            return error_json(false, 422, err.message);
+            console.log(err.message);
+            return error_json(false, 422, "Bad request");
         }
     }
 }

@@ -32,47 +32,53 @@ module.exports = class AuthService {
 
         }
         catch (err) {
-            return error_json(false, 422, err.message);
+            console.log(err.message);
+            return error_json(false, 422, "Bad request");
         }
     }
 
     static async register(data) {
-        // Check if data is valid
-        const { error } = registerValidation(data)
-        if (error)
-            return error_json(false, 400, error.details[0].message)
+        try {
+            // Check if data is valid
+            const { error } = registerValidation(data)
+            if (error)
+                return error_json(false, 400, error.details[0].message)
 
-        // Check if user exists
-        const usernameExist = await User.findOne({ username: data.username });
-        if (usernameExist)
-            return error_json(false, 400, "Username already exists");
+            // Check if user exists
+            const usernameExist = await User.findOne({ username: data.username });
+            if (usernameExist)
+                return error_json(false, 400, "Username already exists");
 
-        const emailExist = await User.findOne({ email: data.email });
-        if (emailExist)
-            return error_json(false, 400, "Email already exists");
+            const emailExist = await User.findOne({ email: data.email });
+            if (emailExist)
+                return error_json(false, 400, "Email already exists");
 
-        // check if passwords match
-        if (data.password !== data.confirm_password)
-            return error_json(false, 400, "Passwords doesn't match");
+            // check if passwords match
+            if (data.password !== data.confirm_password)
+                return error_json(false, 400, "Passwords doesn't match");
 
 
-        // Hash the password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(data.password, salt);
+            // Hash the password
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(data.password, salt);
 
-        // Create and save the user
-        const user = new User({
-            username: data.username,
-            email: data.email,
-            password: hashedPassword,
-            role: 'user'
-        });
+            // Create and save the user
+            const user = new User({
+                username: data.username,
+                email: data.email,
+                password: hashedPassword,
+                role: 'user'
+            });
 
-        var registeredUser = await user.save();
-        if (!registerValidation)
-            return error_json(false, 500, "Error registering user ... please try again");
+            var registeredUser = await user.save();
+            if (!registerValidation)
+                return error_json(false, 500, "Error registering user ... please try again");
 
-        return success_json(true, 200, { id: user._id });
+            return success_json(true, 200, { id: user._id });
+        } catch (err) {
+            console.log(err.message);
+            return error_json(false, 422, "Bad request");
+        }
 
     }
 
