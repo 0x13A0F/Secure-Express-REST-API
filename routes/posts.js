@@ -6,8 +6,10 @@ const PostService = require('../services/post_service');
 router.post('/post', verifyToken, async function (req, res, next) {
 	try {
 		const post = await PostService.addPost(req.user, req.body);
+
 		if (!post.success)
 			return res.status(post.statusCode).send(post);
+
 		res.status(200).send(post);
 	}
 	catch (err) {

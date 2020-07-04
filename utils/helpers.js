@@ -1,14 +1,14 @@
-error_json = function (success, statusCode, message) {
+error_json = function (statusCode, message) {
     return {
-        success: success,
+        success: false,
         statusCode: statusCode,
         error: message
     };
 }
 
-success_json = function (success, statusCode, message) {
+success_json = function (statusCode, message) {
     return {
-        success: success,
+        success: true,
         statusCode: statusCode,
         result: message
     };

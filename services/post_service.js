@@ -9,16 +9,16 @@ module.exports = class PostService {
         // check if data is valid
         const { error } = postValidation(data)
         if (error)
-            return error_json(false, 400, error.details[0].message);
+            return error_json(400, error.details[0].message);
 
         // assigning user to the post	
         data.author_id = session.user_id;
 
         const post = await Post.create(data);
         if (!post)
-            return error_json(false, 500, "Error creating post");
+            return error_json(500, "Error creating post");
 
-        return success_json(true, 200, post);
+        return success_json(200, post);
 
 
     }
@@ -27,15 +27,15 @@ module.exports = class PostService {
 
         var post = await Post.findById({ _id: id });
         if (!post)
-            return error_json(false, 404, "Post not found");
-        return success_json(true, 200, post);
+            return error_json(404, "Post not found");
+        return success_json(200, post);
 
     }
 
     static async editPost(session, id, data) {
         const post = await Post.findById({ _id: id });
         if (!post)
-            return error_json(false, 404, "Post not found");
+            return error_json(404, "Post not found");
         // check if user is author of the post or has higher role
         if (session.user_id == post.author_id || session.role == "moderator" || session.role == "admin") {
             // make sure author_id is not modified
@@ -44,32 +44,33 @@ module.exports = class PostService {
             var res = await Post.updateOne({ _id: id }, data);
 
             if (!res)
-                return error_json(false, 500, "Error editing post");
+                return error_json(500, "Error editing post");
 
             res = await Post.findOne({ _id: id });
-            return success_json(true, 200, res);
+            return success_json(200, res);
         }
         else
-            return error_json(false, 401, "Not authorized");
+            return error_json(401, "Not authorized");
 
     }
 
     static async deletePost(session, id) {
 
-        const post = await Post.findOne({ _id: id });
-        if (!post)
-            return error_json(false, 404, "Post not found");
         // check if user is author of the post
         if (session.user_id == post.author_id || session.role == "moderator" || session.role == "admin") {
+            const post = await Post.findOne({ _id: id });
+            if (!post)
+                return error_json(404, "Post not found");
+
             const res = await Post.deleteOne({ _id: id });
             if (!res)
-                return error_json(false, 500, "Error deleting post");
+                return error_json(500, "Error deleting post");
 
-            return success_json(true, 200, { "ok": res.ok });
+            return success_json(200, { "ok": res.ok });
 
         }
         else
-            return error_json(false, 401, "Not Authorized");
+            return error_json(401, "Not Authorized");
 
 
     }
@@ -89,9 +90,9 @@ module.exports = class PostService {
 
         const posts = await Post.find(qry, {}, { skip: perPage * (page - 1), limit: perPage });
         if (!posts)
-            return error_json(false, 500, "Error getting posts");
+            return error_json(500, "Error getting posts");
         const count = await Post.countDocuments(qry);
-        return success_json(true, 200, { count: posts.length, total: count, posts: posts });
+        return success_json(200, { count: posts.length, total: count, posts: posts });
 
     }
 }

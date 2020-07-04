@@ -16,6 +16,9 @@ using JWT tokens, it is meant to be as Simple and Secure as possible.
 | GET /api/users | x |
 | GET /api/user/:id | x |
 | PUT /api/user/:id | email,username,password |
+| DELETE /api/user/:id | x |
+
+
 
 | Post | Parameters |
 |:----:|:-----:|

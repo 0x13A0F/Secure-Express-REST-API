@@ -4,6 +4,7 @@ const UserService = require('../services/user_service');
 const { verifyToken } = require('./token');
 const { error_json } = require('../utils/helpers');
 
+
 router.get('/users', verifyToken, async (req, res, next) => {
     try {
         const users = await UserService.getUsers(req.user);
@@ -40,5 +41,18 @@ router.put('/user/:id', verifyToken, async (req, res, next) => {
         next(err);
     }
 })
+
+router.delete('/user/:id', verifyToken, async (req, res, next) => {
+    try {
+        const userToDelete = await UserService.deleteUser(req.user, req.params.id);
+        if (!userToDelete.success)
+            return res.status(userToDelete.statusCode).json(userToDelete);
+        res.send(userToDelete);
+    }
+    catch (err) {
+        next(err);
+    }
+
+});
 
 module.exports = router;

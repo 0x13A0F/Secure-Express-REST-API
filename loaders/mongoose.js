@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 module.exports = async ({ dbUrl }) => {
+    // replace the deprecated Promise of mongoose, with the global Promise
     mongoose.Promise = global.Promise;
     var connection;
     try {
